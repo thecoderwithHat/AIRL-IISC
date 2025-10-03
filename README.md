@@ -191,3 +191,30 @@ trainer.run(train_loader, max_epochs=200)
 - **TrivialAugment**: +3-5% accuracy over basic augmentation
 - **OneCycle**: 2× faster convergence than cosine annealing
 
+
+# Text-Driven Image Segmentation with SAM 2(Q2)
+
+This repository provides a single-image segmentation pipeline that combines GroundingDINO, SAM 2, and an optional CLIPSeg fallback to produce masks for objects described by a text prompt.
+
+Pipeline (high level)
+- Load an image (URL or upload) and a user-provided text prompt.
+- Use GroundingDINO to propose text-aligned bounding boxes for the prompt.
+- Select a top-scoring box and use it to prompt SAM 2 (Segment Anything 2) to generate high-quality segmentation masks.
+- If no boxes are found, optionally use CLIPSeg to generate a coarse heatmap and sample positive point seeds for SAM 2.
+- Select the best mask by SAM score, visualize overlays, and save artifacts (mask PNG, overlay, JSON metadata).
+
+Limitations & notes
+- Requires a compatible Python environment (Python >= 3.10 recommended) and recent PyTorch + torchvision builds. Some features rely on CUDA for performance but CPU will work slower.
+- GroundingDINO and SAM 2 weights must be available; the notebook attempts to download them but network access is required on first run.
+- The pipeline depends on third-party repositories and packages (GroundingDINO, segment-anything-2, clipseg, supervision, addict, etc.). Installation errors may require restarting the runtime or manual installs.
+- Different torchvision versions expose NMS differently; the notebook includes fallbacks but results may vary slightly across versions.
+- Small, occluded, or rare objects may be missed by GroundingDINO; CLIPSeg fallback produces coarse guidance and may not always find the target.
+- The notebook is intended to be run top-to-bottom. On Colab, run the install cells first and restart the runtime if prompted.
+
+Quick tips
+- Use a GPU runtime (Colab) for best performance.
+- If you see import or missing-dependency errors, run the dependency/installation cells, restart the runtime, then run all cells again.
+
+For full details, check the notebook cells which include installation, weight download, model loading, and inference steps.
+
+
